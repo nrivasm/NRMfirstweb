@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block header %}Proyecto TICs - Entrar{% endblock %}
+{% block body %}
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+                <div style="z-index: 999;" class="alert alert-success alert-dismissible fade show" role="alert">
+  {{msg}}
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+<style>
+      h3 {text-align: center;}
+      div {
+        margin-right: 70px;
+        margin-left: 70px;
+      }
+</style>
+<div>
+	<h3>Panel de administrador</h3>
+	<p>Este es el panel de administrador. Desde aquí puedes eliminar o ascender usuarios</p>
+</div>
+<form method="post">
+  <div class="form-group">
+    <label for="exampleInputPassword1">Usuario al que eliminar</label>
+    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Usuario" name="ur">
+  </div>
+  <div>
+  	<button type="submit" class="btn btn-danger">Eliminar</button>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Usuario al que hacer administrador</label>
+    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Usuario" name="ua">
+  </div>
+  <div>
+    <button type="submit" class="btn btn-danger">Ascender</button>
+  </div>
+</form>
+<h3>Lista de usuarios:</h3>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Username</th>
+      <th scope="col">Name</th>
+      <th scope="col">E-mail</th>
+      <th scope="col">Role</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in values %}
+    <tr>
+      <th scope="row">{{item._id}}</th>
+      <td>{{item.username}}</td>
+      <td>{{item.name}}</td>
+      <td>{{item.email}}</td>
+      <td>{{item.role}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
