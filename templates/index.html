@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block header %}Proyecto TICs - Página de inicio{% endblock %}
+{% block body %}
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}      
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  {{msg}}
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endblock %}
+{% block banner %}
+<img id="banner" src="https://u.cubeupload.com/lolero2003/banner.jpg" width="1349" height="363" alt="banner">
+{% endblock %}
+{% block index %}
+<h3>Introducción 🖥️</h3>
+<img src="https://media.giphy.com/media/LmNwrBhejkK9EFP504/giphy.gif" width="150" height="150" class="rounded float-right" alt="imagen">
+<p style="font-size:13pt;text-align:justify;margin-right: 180px;">
+Esta es mi primera página web creada desde cero. Antes había creado otras páginas web partiendo desde wordpress, que lo hace mucho más sencillo y sin necesidad de programar nada si no quieres. En esta página web he realizado todo el código desde cero ya que te da mucho más control sobre toda tu página, el back-end está escrito en python (con el módulo de Flask) y el front-end ha sido escrito en una mezcla de HTML(Principalmente) y CSS(Para decoraciones). He usado esta primera página para demostrar lo que se podría hacer. Este proyecto está hecho con mucha ilusión, ¡espero que se note 🤗!
+</p><hr>
+<div class="card-deck">
+  <div class="card">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+  <div class="card">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+  <div class="card">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    ¡Gracias!
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+      <p>Parece que has llegado al final de la página.</p>
+      <p style="font-size:80%;">Espero que te haya gustado</p>
+    </blockquote>
+  </div>
+</div>
+{% endblock %}
