@@ -1,36 +1,57 @@
 {% extends "base.html" %}
-{% block header %}Proyecto TICs - Usuario{% endblock %}
 {% block body %}
 <style>
-	h2 {text-align: center;}
-	#user {
-		margin: auto;
-  		width: 50%;
-  		padding: 10px;
-	}
+    div{
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+    #profile_pic{
+        margin-top: 30px;
 </style>
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for msg in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-  {{msg}}
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-<div id="user">
-	<h3>Perfil </h3><p style="font-size:18px;"><b>Usuario: </b>{{ session["user"] }}</p>
-	<form action="#" method="POST">
-		<p style="font-size:18px;"><b>E-mail 📧: </b><input class="form-control" size="20" type="email" name="email" placeholder="E-mail" value="{{session['email'] if session['email']}}"></input></p>
-		<p style="font-size:18px;"><b>Nombre 🧍: </b><input class="form-control" size="20" type="text" name="real_name" placeholder="Nombre completo" value="{{session['name'] if session['name']}}"></input></p>
-		<p><input class="btn btn-primary" type="submit" value="Actualizar ⬆️"/></p>
-	</form>
-	<button type="button" onclick="log_out()"; class="btn btn-danger">Salir ❌</button>
-	<script >function log_out(){location.href = "/logout/"}</script>
-	{% if session["role"] == "ADMIN" %}
-		<button type="button" onclick="admin_panel()"; class="btn btn-secondary">Panel de administrador 🛠️</button>
-		<script >function admin_panel(){location.href = "/admin/"}</script>
-	{% endif %}
+<div class="container">
+    <div class="row my-2">
+        <div class="col-lg-8 order-lg-2">
+            <div class="tab-content py-4">
+                <div class="tab-pane active" id="profile">
+                    <h4 class="mb-3">Perfil</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form method="POST">
+                            <p><b>Usuario: </b>{{ session["user"] }}</p>
+                            <p style="font-size:16px;"><b>E-mail 📧: </b><input class="form-control" size="20" type="email" name="email" placeholder="E-mail" value="{{session['email'] if session['email']}}"></input></p>
+                            <p style="font-size:16px;"><b>Nombre 🧍: </b><input class="form-control" size="20" type="text" name="real_name" placeholder="Nombre completo" value="{{session['name'] if session['name']}}"></input></p>
+                            <p style="font-size:16px;"><b>Foto de perfil 📷: </b>
+                            <input class="form-control" type="text" name="url" placeholder="URL de imagen" value="{{session['url'] if session['url']}}"></input></p>
+                            <p><input class="btn btn-primary" type="submit" value="Actualizar ⬆️"/></p>
+                            <button type="button" onclick="log_out()"; class="btn btn-danger">Salir ❌</button>
+                            <script >function log_out(){location.href = "/logout/"}</script>
+                            {% if session["role"] == "ADMIN" %}
+                            <button type="button" onclick="admin_panel()"; class="btn btn-secondary">Panel de administrador 🛠️</button>
+                            <script >function admin_panel(){location.href = "/admin/"}</script>
+                            {% endif %}
+                        </form>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Rol</h5>
+                            <hr>
+                            {% if session["role"] == "ADMIN" %}
+                            <span class="badge badge-danger"><i class="fa fa-eye"></i>Administrador</span>
+                            {% else %}
+                            <span class="badge badge-primary"><i class="fa fa-user"></i>Usuario</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 order-lg-1 text-center">
+            {% if session["url"] != "" %}
+                <img id="profile_pic" src="{{ session['url'] }}" height="150" width="150" class="rounded-lg mx-auto img-fluid img-circle d-block">
+            {% else %}
+                <img id="profile_pic" src="//placehold.it/150" class="rounded-lg mx-auto img-fluid img-circle d-block" alt="avatar">
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
