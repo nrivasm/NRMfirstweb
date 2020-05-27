@@ -6,6 +6,7 @@ from flask import Flask, redirect, url_for, render_template, request, session, f
 from flask_sqlalchemy import SQLAlchemy             # Base de datos utilizando SQLAlchemy basado en SQL
 import bcrypt                                       # Librería de brypt para hashear contraseás y almacenarla de forma segura
 import smtplib, ssl
+import git
 
                                                     # Iniciar las librerías y sus parámetros iniciales
 app = Flask(__name__)
@@ -34,6 +35,16 @@ class users(db.Model):                              # La clase sigue el modelo d
         self.name = name
         self.role = role
 
+@app.route('/update_server', methods=['POST'])
+    def webhook():
+        if request.method == 'POST':
+            repo = git.Repo('path/to/git_repo')
+            origin = repo.remotes.origin
+            origin.pull()
+            return 'Updated PythonAnywhere successfully', 200
+        else:
+            return 'Wrong event type', 400
+        
 @app.route("/")                                     # http://host/ hará lo siguiente
 def home():                                         # función que se va a ejecutar
     return render_template("index.html")            #Renderizamos archivo HTML
