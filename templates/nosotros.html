@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block header %}Proyecto TICs - Página de inicio{% endblock %}
+{% block body %}
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}      
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  {{msg}}
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endblock %}
+{% block banner %}
+<img id="banner" src="https://u.cubeupload.com/lolero2003/banner.jpg" style="width: 100%;
+     height: auto;" alt="banner">
+{% endblock %}
+{% block index %}
+<div class="card">
+  <div class="card-header">
+    ¡Gracias!
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+      <p>Parece que has llegado al final de la página.</p>
+      <p style="font-size:80%;">Espero que te haya gustado</p>
+    </blockquote>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block header %}Proyecto TICs - Publicación{% endblock %}
+{% block body %}
+<div>
+  <h3>{{ post_display[0] }}</h3>
+  <p><b>Tema:</b>{{ post_display[1] }}</p>
+  <p>{{ post_display[2] }}</p>
+  <p><b>Autor:</b>{{ post_display[3].username }}</p>
+</div>
+<form method="POST">
+  <p>Comentario 💬</p>
+  <div style="height:100px;margin-right: 0px;margin-left: 0px;"><textarea style="height:90px;width:1200px;resize:none;" class="form-control" name="cont" placeholder="Comentario"></textarea></div>
+  <p><button type="submit"; class="btn btn-primary"; name="">Publicar</button></p>
+</form>
+<h3>Comentarios 🗯️</h3>
+<hr>
+{% for i in range(num) %}
+<div class="media">
+  <img class="mr-3 rounded-circle" src="{{ lista[i][1] }}" width="75" length="75" alt="Generic placeholder image">
+  <div class="media-body">
+    <h5 class="mt-0">{{ lista[i][0] }}
+      {% if rl[i] == "ADMIN" %}
+      <span class="badge badge-danger"><i class="fa fa-eye"></i>Administrador</span>
+      {% else %}<span class="badge badge-primary"><i class="fa fa-eye"></i>Usuario</span>
+    {% endif %}</h5>
+    {{ lista[i][2] }}
+  </div>
+</div>
+<hr>
+{% endfor %}
+<div class="card">
+  <div class="card-header">
+    ¡Gracias!
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+      <p>Parece que has llegado al final de la página.</p>
+      <p style="font-size:80%;">Espero que te haya gustado</p>
+    </blockquote>
+  </div>
+</div>
+{% endblock %}

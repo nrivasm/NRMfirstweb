@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block header %}Proyecto TICs - Pruebas{% endblock %}
+{% block body %}
+<style>
+  #no_margin {
+    margin-right: 0px;
+    margin-left: 0px;
+  }
+</style>
+<h3>Foro 🧑‍🤝‍🧑</h3>
+<div id="no_margin" class="col-sm"><button type="button" onclick="new_discussion()"; class="btn btn-primary">Nueva discusión</button></div>
+<h3>Posts</h3>
+<hr>
+{% for i in range(num) %}
+<div>
+  <h5><a href="/{{ info[i][3] }}">{{ info[i][0] }}</a></h5>
+  <p><b>Tema:</b>{{ info[i][1] }}</p>
+  <p><b>Autor:</b>{{ info[i][2] }}</p>
+</div>
+<hr>
+{% endfor %}
+<script >function new_discussion(){location.href = "/post/"}</script>
+{% endblock %}
