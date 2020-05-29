@@ -6,6 +6,7 @@ from flask import Flask, redirect, url_for, render_template, request, session, f
 from flask_sqlalchemy import SQLAlchemy             # Base de datos utilizando SQLAlchemy basado en SQL
 import bcrypt                                       # Librería de brypt para hashear contraseás y almacenarla de forma segura
 import smtplib, ssl
+import sys
                                                     # Iniciar las librerías y sus parámetros iniciales
 app = Flask(__name__)
 app.secret_key = "nderivasmorillo"
@@ -35,6 +36,30 @@ class users(db.Model):                              # La clase sigue el modelo d
         self.url = url
         if username == "admin":
             self.role = "ADMIN"
+
+class comments(db.Model):
+    _id = db.Column("id", db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    content = db.Column(db.String(100))
+    post_id = db.Column(db.Integer)
+
+    def __init__(self, user_id, content, post_id):
+        self.user_id = user_id
+        self.content = content
+        self.post_id = post_id
+
+class posts(db.Model):
+    _id = db.Column("id", db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    title = db.Column(db.String(100))
+    theme = db.Column(db.String(100))
+    content = db.Column(db.String(3000))
+
+    def __init__(self, user_id, title, theme, content):
+        self.user_id = user_id
+        self.title = title
+        self.theme = theme
+        self.content = content
 
 @app.route("/")                                     # http://host/ hará lo siguiente
 def home():                                         # función que se va a ejecutar
@@ -74,6 +99,7 @@ def login():
 
         if found_user != None:
             if bcrypt.checkpw(pwd, found_user.password): # Comprobamos si el hash almacenado pertenee a la contraseña
+                session["id"] = found_user._id
                 session["email"] = found_user.email
                 session["user"] = found_user.username # Establecemos datos de la sesión
                 session["name"] = found_user.name
@@ -143,9 +169,14 @@ def historia():
 def referencias():
     return render_template("referencias.html")
 
-@app.route("/Pruebas/")
-def pruebas():
-    return render_template("pruebas.html")
+@app.route("/Foro/",)
+def foro():
+    posts_to_display = []
+    for i in posts.query.all():
+        author = users.query.filter_by(_id = i.user_id).first()
+        posting_info = [i.title, i.theme, author.username, i._id]
+        posts_to_display.append(posting_info)
+    return render_template("foro.html", info=posts_to_display.copy(), num=len(posts_to_display))
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -188,6 +219,57 @@ def admin():
     else:
         return redirect(url_for("login"))
     return render_template("admin.html")
+
+@app.route("/Archivo/")
+def archivo():
+    return render_template("archivo.html")
+
+@app.route("/Nosotros/")
+def nosotros():
+    return render_template("nosotros.html")
+
+@app.route("/<id>", methods=["POST", "GET"])
+def posts_func(id):
+    comment = []
+    roles=[]
+    post = posts.query.filter_by(_id = id).first()
+    poster = users.query.filter_by(_id = post.user_id).first()
+    post_info = [post.title, post.theme, post.content, poster]
+    for i in comments.query.all():
+        user = users.query.filter_by(_id = i.user_id).first()
+        comment_info = [user.username, user.url, i.content]
+        if i.post_id == int(id):
+            comment.append(comment_info)
+            roles.append(user.role)
+    if request.method == "POST":
+        if "user" in session:
+            author_id = session["id"]
+            content = request.form["cont"]
+            post_id = id
+            cmtn = comments(author_id, content, post_id)
+            db.session.add(cmtn)
+            db.session.commit()
+            return redirect(url_for("foro"))
+        else:
+            flash("Debes entrar a tu cuenta primero", "info")
+            return redirect(url_for("login"))
+    return render_template("posts.html", lista=comment.copy(), num=len(comment), rl=roles.copy(), post_display=post_info.copy())
+
+@app.route("/post/", methods=["POST", "GET"])
+def post():
+    if "user" in session:
+        if request.method == "POST":
+            ttl = request.form["Title"]
+            tm = request.form["Theme"]
+            cntnt = request.form["content"]
+            pt = posts(session["id"], ttl, tm, cntnt)
+            db.session.add(pt)
+            db.session.commit()
+            return redirect(url_for("foro"))
+    else:
+        flash("Tienes que entrar para crear un nuevo post", "info")
+        return redirect(url_for("login"))
+    return render_template("post.html")
 
 if __name__ == "__main__":                              # Al iniciar la app
     db.create_all()                                     # Creamos las bases de datos
