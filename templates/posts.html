@@ -6,6 +6,14 @@
   <p><b>Tema:</b>{{ post_display[1] }}</p>
   <p>{{ post_display[2] }}</p>
   <p><b>Autor:</b>{{ post_display[3].username }}</p>
+  {% if session["role"] == "ADMIN" or post_display[3].username == session["user"] %}
+    <button type="button" onclick="delete_post()" class="btn btn-danger">Borrar post 🗑️</button>
+    <script >function delete_post(){location.href = "/{{ identification }}/elim/"}</script>
+  {% endif %}
+  {% if post_display[3].username == session["user"] %}
+    <button type="button" onclick="edit_post()" class="btn btn-secondary">Editar ✏️</button>
+    <script >function edit_post(){location.href = "/{{ identification }}/edit/"}</script>
+  {% endif %}
 </div>
 <form method="POST">
   <p>Comentario 💬</p>
@@ -22,8 +30,16 @@
       {% if rl[i] == "ADMIN" %}
       <span class="badge badge-danger"><i class="fa fa-eye"></i>Administrador</span>
       {% else %}<span class="badge badge-primary"><i class="fa fa-eye"></i>Usuario</span>
-    {% endif %}</h5>
+    {% endif %}
+    {% if post_display[3]._id == lista[i][3]._id %}
+      <span class="badge badge-secondary">Autor</span>
+    {% endif %}
+    </h5>
     {{ lista[i][2] }}
+    {% if session["role"] == "ADMIN" or session["user"] == lista[i][0]%}
+    <p><button type="button" onclick="delete_cmt()" class="btn btn-danger">Borrar comentario 🗑️</button></p>
+    <script >function delete_cmt(){location.href = "/{{ c_id[i] }}/del/"}</script>
+  {% endif %}
   </div>
 </div>
 <hr>
