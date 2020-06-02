@@ -7,6 +7,13 @@
     margin-left: 0px;
   }
 </style>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">{{msg}}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+      {% endfor %}
+    {% endif %}
+{% endwith %}
 <h3>Foro 🧑‍🤝‍🧑</h3>
 <div id="no_margin" class="col-sm"><button type="button" onclick="new_discussion()"; class="btn btn-primary">Nueva discusión</button></div>
 <h3>Posts</h3>
