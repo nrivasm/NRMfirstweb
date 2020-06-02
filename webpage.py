@@ -5,8 +5,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash # Librería de página web
 from flask_sqlalchemy import SQLAlchemy             # Base de datos utilizando SQLAlchemy basado en SQL
 import bcrypt                                       # Librería de brypt para hashear contraseás y almacenarla de forma segura
-import smtplib, ssl
-import sys
+import smtplib                                      # Librería para emails automatizados
                                                     # Iniciar las librerías y sus parámetros iniciales
 app = Flask(__name__)
 app.secret_key = "nderivasmorillo"
@@ -37,7 +36,7 @@ class users(db.Model):                              # La clase sigue el modelo d
         if username == "admin":
             self.role = "ADMIN"
 
-class comments(db.Model):
+class comments(db.Model):                           # Clase de los comentarios
     _id = db.Column("id", db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     content = db.Column(db.String(100))
@@ -48,7 +47,7 @@ class comments(db.Model):
         self.content = content
         self.post_id = post_id
 
-class posts(db.Model):
+class posts(db.Model):                              #Clase de los posts
     _id = db.Column("id", db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     title = db.Column(db.String(100))
@@ -142,8 +141,8 @@ def user():
 
             Bienvenido a la web de Nico de Rivas, espero que disfrutes!"""
 
-            context = ssl.create_default_context()
             try:
+                context = ssl.create_default_context()
                 with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
                     server.login(sender_email, password)
                     server.sendmail(sender_email, session["email"], message)
@@ -232,15 +231,17 @@ def nosotros():
 def posts_func(id):
     comment = []
     roles=[]
+    ids=[]
     post = posts.query.filter_by(_id = id).first()
     poster = users.query.filter_by(_id = post.user_id).first()
     post_info = [post.title, post.theme, post.content, poster]
     for i in comments.query.all():
         user = users.query.filter_by(_id = i.user_id).first()
-        comment_info = [user.username, user.url, i.content]
+        comment_info = [user.username, user.url, i.content, user, i._id]
         if i.post_id == int(id):
             comment.append(comment_info)
             roles.append(user.role)
+            ids.append(i._id)
     if request.method == "POST":
         if "user" in session:
             author_id = session["id"]
@@ -249,11 +250,48 @@ def posts_func(id):
             cmtn = comments(author_id, content, post_id)
             db.session.add(cmtn)
             db.session.commit()
-            return redirect(url_for("foro"))
+            return redirect(url_for("posts_func", id=id))
         else:
             flash("Debes entrar a tu cuenta primero", "info")
             return redirect(url_for("login"))
-    return render_template("posts.html", lista=comment.copy(), num=len(comment), rl=roles.copy(), post_display=post_info.copy())
+    return render_template("posts.html", lista=comment.copy(), num=len(comment), rl=roles.copy(), post_display=post_info.copy(), identification=id, c_id=ids.copy())
+
+@app.route("/<id>/del/", methods=["POST", "GET"])
+def delete_comment(id):
+    comment_to_delete = comments.query.filter_by(_id = id).first()
+    author_cmt = users.query.filter_by(_id = comment_to_delete.user_id).first()
+    if session["role"] == "ADMIN" or author_cmt.username == session["user"]:
+        db.session.delete(comment_to_delete)
+        db.session.commit()
+        flash("Comentario borrado", "info")
+        return redirect(url_for("foro"))
+
+@app.route("/<id>/edit/", methods=["POST", "GET"])
+def edit_post(id):
+    post_to_edit = posts.query.filter_by(_id = id).first()
+    if post_to_edit.user_id == session["id"]:
+        title = post_to_edit.title
+        theme = post_to_edit.theme
+        content = post_to_edit.content
+        if request.method == "POST":
+            post_to_edit.title = request.form["Title"]
+            post_to_edit.theme = request.form["Theme"]
+            post_to_edit.content = request.form["content"]
+            db.session.commit()
+            return redirect(url_for("posts_func", id=id))
+    return render_template("post.html", ti=title, th=theme, co=content)
+
+@app.route("/<id>/elim/", methods=["POST", "GET"])
+def delete_post(id):
+    post_to_delete = posts.query.filter_by(_id = id).first()
+    post_author = users.query.filter_by(_id = post_to_delete.user_id).first()
+    if post_author._id == session["id"] or session["role"] == "ADMIN":
+        db.session.delete(post_to_delete)
+        for cmt in comments.query.filter_by(post_id = id).all():
+            db.session.delete(cmt)
+        db.session.commit()
+        flash("Post borrado", "info")
+        return redirect(url_for("foro"))
 
 @app.route("/post/", methods=["POST", "GET"])
 def post():
@@ -269,7 +307,7 @@ def post():
     else:
         flash("Tienes que entrar para crear un nuevo post", "info")
         return redirect(url_for("login"))
-    return render_template("post.html")
+    return render_template("post.html", ti="", th="", co="")
 
 if __name__ == "__main__":                              # Al iniciar la app
     db.create_all()                                     # Creamos las bases de datos
