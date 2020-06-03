@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 port = 465
 smtp_server = "smtp.gmail.com"
 sender_email = "web.nicolas.noreply@gmail.com"
-password = "20030326Nico."
+password = ""
                                                     # Creo la clase usuario con la que registraré todos los nuevos usuarios
 class users(db.Model):                              # La clase sigue el modelo de archivo SQL - Los archivos SQL se pueden ver como excels
     _id = db.Column("id", db.Integer, primary_key=True) # Creamos una columna que contenga las ids (Int) de los usuarios ya que es obligatorio
